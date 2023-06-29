@@ -6,7 +6,7 @@
 #include <map>
 #include <algorithm>
 
-#include "navmesh.h"
+#include "recast.h"
 
 Navmesh::Navmesh( const char* _nav_path ) : initialized_(false)
 {
@@ -472,7 +472,7 @@ bool Navmesh::print_tiles()
 {
 	FILE* fp = fopen("map_data.py", "w");
     fprintf(fp, "DATA=[");
-    int i,j;
+    int i;
     int count = 0;
     printf("getMaxTiles = %d\n", navmesh_->getMaxTiles());
     for(i = 0; i < navmesh_->getMaxTiles(); i++)
@@ -499,7 +499,7 @@ bool Navmesh::print_tiles()
                     {
                         int vertIndex = poly->verts[l];
                         float x = tile->verts[vertIndex*3];
-                        float y = tile->verts[vertIndex*3+1];
+                        // float y = tile->verts[vertIndex*3+1];
                         float z = tile->verts[vertIndex*3+2];
                         // printf("\t\t 顶点信息 pverts[%d] index = %d, 坐标是 (%f, %f, %f)\n", l, poly->verts[l], 
                         //     tile->verts[vertIndex*3], tile->verts[vertIndex*3+1],tile->verts[vertIndex*3+2]

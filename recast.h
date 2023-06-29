@@ -88,6 +88,9 @@ private:
 
     struct NavMeshSetHeader
     {
+#ifdef RECAST_NEW_VERSION
+        int magic;
+#endif
         int version;
         int numTiles;
         dtNavMeshParams params;

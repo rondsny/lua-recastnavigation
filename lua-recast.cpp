@@ -11,9 +11,18 @@ extern "C" {
 #include <math.h>
 #include <map>
 
-#include "navmesh.h"
+#include "recast.h"
 
 #define EXCLUDE_MAX 0xffff
+#define EXCLUDE_DEFAULT 1024
+
+static inline unsigned int _check_exclude(lua_State *L, int idx){
+    unsigned int exclude = luaL_checkinteger(L, idx);
+    if(exclude==0 || exclude>EXCLUDE_MAX){
+        luaL_error(L, "exclude must be a number between 0 and 65535");
+    }
+    return exclude;
+}
 
 static inline Navmesh* _check_navmesh(lua_State *L){
     Navmesh **ud = (Navmesh **)lua_touserdata(L, 1);
@@ -79,10 +88,8 @@ static int l_findpath(lua_State *L){
     float ex = luaL_checknumber(L, 5);
     float ey = luaL_checknumber(L, 6);
     float ez = luaL_checknumber(L, 7);
-    unsigned int exclude = luaL_checkinteger(L, 8);
-    if(exclude==NULL || exclude>EXCLUDE_MAX){
-        luaL_error(L, "exclude must be a number between 0 and 65535");
-    }
+    unsigned int exclude = _check_exclude(L, 8);
+
     VECTOR3 start(sx, sy, sz);
     VECTOR3 end(ex, ey, ez);
     std::vector<VECTOR3> pathPoint;
@@ -122,10 +129,7 @@ static int l_is_walkable(lua_State *L)
     float ex = luaL_checknumber(L, 2);
     float ey = luaL_checknumber(L, 3);
     float ez = luaL_checknumber(L, 4);
-    unsigned int exclude = luaL_checkinteger(L, 5);
-    if(NULL==exclude || exclude>EXCLUDE_MAX){
-        luaL_error(L, "exclude must be a number between 0 and 65535");
-    }
+    unsigned int exclude = _check_exclude(L, 5);
 
     VECTOR3 vec(ex, ey, ez);
     VECTOR3 vec2;
@@ -144,14 +148,11 @@ static int l_reasonal_pos(lua_State *L)
     float ex = luaL_checknumber(L, 3);
     float ey = luaL_checknumber(L, 4);
     float ez = luaL_checknumber(L, 5);
-    unsigned int exclude = luaL_checkinteger(L, 6);
-    if(NULL==exclude || exclude>EXCLUDE_MAX){
-        luaL_error(L, "exclude must be a number between 0 and 65535");
-    }
+    unsigned int exclude = _check_exclude(L, 6);
 
     VECTOR3 vec(ex, ey, ez);
     VECTOR3 vec2;
-    if (navmesh -> find_reasonal_pos(&vec, 0.02f, &vec2, exclude)){
+    if (navmesh -> find_reasonal_pos(&vec, radius, &vec2, exclude)){
         lua_pushboolean(L, true);
         lua_pushnumber(L, vec2.x);
         lua_pushnumber(L, vec2.y);
@@ -173,7 +174,7 @@ static int l_raycast(lua_State *L)
     float ex = luaL_checknumber(L, 5);
     float ey = luaL_checknumber(L, 6);
     float ez = luaL_checknumber(L, 7);
-    unsigned int exclude = luaL_checkinteger(L, 8);
+    unsigned int exclude = _check_exclude(L, 8);
     
     VECTOR3 start(sx, sy, sz);
     VECTOR3 end(ex, ey, ez);
@@ -206,10 +207,7 @@ static int l_random_pos(lua_State *L)
     float ex = luaL_checknumber(L, 3);
     float ey = luaL_checknumber(L, 4);
     float ez = luaL_checknumber(L, 5);
-    unsigned int exclude = luaL_checkinteger(L, 6);
-    if(NULL==exclude || exclude>EXCLUDE_MAX){
-        luaL_error(L, "exclude must be a number between 0 and 65535");
-    }
+    unsigned int exclude = _check_exclude(L, 6);
     VECTOR3 vec(ex, ey, ez);
 
     VECTOR3 vec2;
@@ -229,10 +227,7 @@ static int l_random_pos(lua_State *L)
 static int l_random_pos_over_map(lua_State *L)
 {
     Navmesh *navmesh = _check_navmesh(L);
-    unsigned int exclude = luaL_checkinteger(L, 2);
-    if(NULL==exclude || exclude>EXCLUDE_MAX){
-        luaL_error(L, "exclude must be a number between 0 and 65535");
-    }
+    unsigned int exclude = _check_exclude(L, 2);
 
     VECTOR3 vec;
     if (navmesh -> find_random_pos_over_map(&vec, exclude))
@@ -248,12 +243,10 @@ static int l_random_pos_over_map(lua_State *L)
     }
 }
 
-extern "C" int luaopen_navmeh(lua_State* L)
+extern "C" int luaopen_recast(lua_State* L)
 {
     luaL_checkversion(L);
-
     luaL_Reg l[] = {
-        {"test_data", l_test_data},
         {"get_border", l_get_border},
         {"findpath", l_findpath},
         {"is_walkable", l_is_walkable},
@@ -262,18 +255,16 @@ extern "C" int luaopen_navmeh(lua_State* L)
         {"random_pos", l_random_pos},
         {"random_pos_over_map", l_random_pos_over_map},
         
+        {"test_data", l_test_data},
         {"get_triangles", l_get_triangles},
         {NULL, NULL}
     };
 
     lua_createtable(L, 0, 2);
-
     luaL_newlib(L, l);
     lua_setfield(L, -2, "__index");
     lua_pushcfunction(L, _release);
     lua_setfield(L, -2, "__gc");
-
     lua_pushcclosure(L, _new, 1);
-
     return 1;
 }
