@@ -43,7 +43,7 @@ public:
     bool find_random_pos_over_map(VECTOR3* _rand_pt, unsigned short exclude=0);
     bool find_random_pos(const VECTOR3* _pos, float radius, VECTOR3* _rand_pt, unsigned short exclude=0);
     bool find_reasonal_pos(const VECTOR3* _pos, float radius, VECTOR3*_closest_pt, unsigned short exclude=0);
-    bool print_tiles();
+    bool print_tiles(char * filepath);
 
     unsigned int get_querier_count();
 

@@ -1,4 +1,3 @@
-
 all: recast.so
 
 CC = g++
@@ -11,8 +10,9 @@ RECAST_INCLUDE_DIR = 3rd/recastnavigation/Detour/Include
 recast.so: recast.h recast.cpp 3rd/recastnavigation/Detour/Source/*.cpp lua-recast.cpp
 	$(CC) $(CFLAGS) -I$(LUA_INCLUDE_DIR) -I$(RECAST_INCLUDE_DIR) $(DEFS) -o $@ $^
 
-test:
-	lua test.lua
 
 clean:
 	rm -f *.so
+
+test:
+	lua test.lua

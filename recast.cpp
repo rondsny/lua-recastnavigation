@@ -468,9 +468,9 @@ bool Navmesh::get_height( const VECTOR3* _pos, float* _height)
     }
 }
 
-bool Navmesh::print_tiles()
+bool Navmesh::print_tiles(char * filepath)
 {
-	FILE* fp = fopen("map_data.py", "w");
+	FILE* fp = fopen(filepath, "w");
     fprintf(fp, "DATA=[");
     int i;
     int count = 0;

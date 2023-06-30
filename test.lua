@@ -1,13 +1,13 @@
 local args = {...}
-local path = "nav_data/1001.navmesh"
+local path = "test/nav_data/sample1.navmesh"
 if #args > 0 then
     path = args[1]
 end
 
-local navmesh = require 'navmeh'
+local Recast = require 'recast'
 
-print("type 1>>>", type(navmesh))
-local obj = navmesh(path)
+print("type 1>>>", type(Recast))
+local obj = Recast(path)
 print("type 2>>>", type(obj))
 
 print("test_data", obj:test_data())
@@ -34,4 +34,4 @@ print("random_pos_over_map test1", obj:random_pos_over_map(1024))
 print("random_pos_over_map test2", obj:random_pos_over_map(1024))
 print("random_pos_over_map test3", obj:random_pos_over_map(1024))
 
-print("get_triangles", obj:get_triangles())
+print("get_triangles", obj:get_triangles("tools/map_data.py"))

@@ -70,7 +70,8 @@ static int l_get_border(lua_State *L){
 
 static int l_get_triangles(lua_State *L){
     Navmesh *navmesh = _check_navmesh(L);
-    bool ret = navmesh->print_tiles();
+    char *filepath = (char*)luaL_checkstring(L, 2);
+    bool ret = navmesh->print_tiles(filepath);
     if(ret){
         printf("findpath success\n");
         return 0;
